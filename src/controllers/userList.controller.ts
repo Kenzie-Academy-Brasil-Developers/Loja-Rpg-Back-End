@@ -1,32 +1,21 @@
-
 import { Request, Response } from 'express'
 
-// importamos o Service
-import listUsersService from '../services/userList.service'
+import {userCreateService,userListService,userIDListService} from '../services/userList.service'
 
-const userListController = (req: Request, res: Response) => {
 
-    try {
-				
-				// chamamos o Service
-				// users será inferido como um array de IUsers ( IUsers[] )
-				// pois o Service está retornando o array que tipamos
-        const users = listUsersService()
-				
-				// retornamos 200 com a lista dos usuários (mesmo se estiver vazia)
-        return res.send(users)
-
-    } catch (err) {
-
-        if (err instanceof Error) {
-
-            return res.status(400).send({
-                "error": err.name,
-                "message": err.message
-            })
-        }
-    }
+export const userListController = async (req: Request, res: Response) => {
+    const users = await userListService()
+    return res.send(users)
 }
 
-export default userListController
-        
+export const userIDListController = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const users = await userIDListService(id)
+    return res.send(users)
+}
+
+export const userCreateController = async (req: Request, res: Response) => {
+    const { nome, preco, generos, imagenPrincipal, imagens, descricao  } = req.body
+    const newUser = await userCreateService({nome, preco, generos, imagenPrincipal, imagens, descricao})
+    return res.status(201).send(newUser)
+}
